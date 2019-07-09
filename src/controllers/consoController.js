@@ -30,7 +30,18 @@ function getConsoCumulToday() {
 }
 
 function getConsoPerHoursToday() {
-	listConsoToday().then(data => trtDate(data));
+	listConsoToday().then(data => createTabPerHours(data));
+}
+
+function getEvolution() {
+	var today = new Date().getTime().toString().substr(0, 5);
+	
+	return new Promise((resolve, reject) => {
+		consoModel.find({ $or: [ { "tags.timestamp": new RegExp('^' + today) }, { "tags.timestamp": new RegExp('^' + (today-1)) } ] }, function(err, result) {
+			resolve(result);
+		});
+	})
+	
 }
 
 function listConsoToday() {
@@ -43,7 +54,7 @@ function listConsoToday() {
 	})
 }
 
-function trtDate(array) {
+function createTabPerHours(array) {
 	var hours = new Date(array[0].timestamp).getHours()
 	var tabHours = [];
 	var reccurent = 1;
