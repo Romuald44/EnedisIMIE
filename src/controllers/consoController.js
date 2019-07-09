@@ -30,9 +30,7 @@ function getConsoCumulToday() {
 }
 
 function getConsoPerHoursToday() {
-	listConsoToday().then(data =>
-		console.log(data[0].timestamp)
-	);
+	listConsoToday().then(data => trtDate(data));
 }
 
 function listConsoToday() {
@@ -43,4 +41,47 @@ function listConsoToday() {
 			resolve(result);
 		});
 	})
+}
+
+function trtDate(array) {
+	var hours = new Date(array[0].timestamp).getHours()
+	var tabHours = [];
+	var reccurent = 1;
+	
+	for (var i = 0, len = array.length; i < len; i++) {
+		var currHours = new Date(array[i].timestamp).getHours();
+		
+		if(currHours == hours) {
+			
+			if(reccurent > 1 ) {
+				tabHours[currHours] = {
+					inject: (tabHours[currHours].inject + array[i].fields.inject)/reccurent,
+					soutir: (tabHours[currHours].soutir + array[i].fields.soutir)/reccurent,
+					autoconso: (tabHours[currHours].autoconso + array[i].fields.autoconso)/reccurent,
+					prod: (tabHours[currHours].prod + array[i].fields.prod)/reccurent
+				}
+			} else {
+				tabHours[currHours] = {
+					inject: array[i].fields.inject,
+					soutir: array[i].fields.soutir,
+					autoconso: array[i].fields.autoconso,
+					prod: array[i].fields.prod
+				}
+			}
+		
+			reccurent++;
+		} else {
+			hours = currHours;
+			reccurent = 1;
+			
+			tabHours[currHours] = {
+				inject: array[i].fields.inject,
+				soutir: array[i].fields.soutir,
+				autoconso: array[i].fields.autoconso,
+				prod: array[i].fields.prod
+			}
+		}
+	}
+	
+	console.log(tabHours);
 }
