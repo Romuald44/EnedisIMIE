@@ -4,14 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
 var consoRouter = require('./routes/conso');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, '../src/views'));
-app.set('view engine', 'twig');
+app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -23,7 +22,6 @@ app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); /
 app.use('/js', express.static(__dirname + '/node_modules/echarts/dist'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect bootstrap CSS
 
-app.use('/', indexRouter);
 app.use('/conso', consoRouter);
 
 // catch 404 and forward to error handler

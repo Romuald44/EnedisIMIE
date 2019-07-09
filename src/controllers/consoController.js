@@ -2,13 +2,10 @@ const mongoose = require('mongoose');
 var consoModel = require('../models/consoModel.js');
 
 exports.index = function(req, res) {
-	//getConsoCumulToday().then(data => console.log(data));//res.render('conso', {conso: data})
-	
-	/*Promise.all([getConsoCumulToday(), getConsoPerHoursToday()]).then(function(data) {
-	  console.log(data)
-	});*/
-	
-	getConsoPerHoursToday();
+	Promise.all([getConsoCumulToday(), getConsoPerHoursToday(), getEvolution()]).then(function(data) {
+		console.log(data);
+		res.render('conso', {consoCumul: data[0], consoHours: data[1], consoEvol: data[2]});
+	});
 };
 
 function getConsoCumulToday() {
@@ -30,23 +27,42 @@ function getConsoCumulToday() {
 }
 
 function getConsoPerHoursToday() {
-	listConsoToday().then(data => createTabPerHours(data));
+	var today = new Date().getTime().toString().substr(0, 5);
+	return new Promise(function(resolve, reject) {
+		listConsoToday(today).then(function(data) {
+			 resolve(createTabPerHours(data));
+		})
+	});
 }
 
 function getEvolution() {
 	var today = new Date().getTime().toString().substr(0, 5);
 	
-	return new Promise((resolve, reject) => {
-		consoModel.find({ $or: [ { "tags.timestamp": new RegExp('^' + today) }, { "tags.timestamp": new RegExp('^' + (today-1)) } ] }, function(err, result) {
-			resolve(result);
+	return new Promise(function(resolve, reject) {
+		listConsoToday(today).then(function(dataJ) {
+			 listConsoToday(today-1).then(function(dataJ1) {
+				 var tendance = [];
+				 for (var i = 0, len = dataJ.length; i < len; i++) {
+					 if(!dataJ[i].prod || !dataJ1[i].prod) {
+						 tendance[i] = {evol: 0}
+					 } else { 
+						 if(dataJ[i].prod > dataJ1[i].prod) {
+							 tendance[i] = {evol: 1}
+						 } else if(dataJ[i].prod < dataJ1[i].prod) {
+							 tendance[i] = {evol: -1}
+						 } else {
+							 tendance[i] = {evol: 0}
+						 }
+					 }
+				 }
+				 console.log(tendance);
+				 resolve(tendance);
+			 });
 		});
-	})
-	
+	});
 }
 
-function listConsoToday() {
-	var today = new Date().getTime().toString().substr(0, 5);
-	
+function listConsoToday(today) {
 	return new Promise((resolve, reject) => {
 		consoModel.find({ "tags.timestamp": new RegExp('^' + today) }, function(err, result) {
 			resolve(result);
@@ -94,5 +110,5 @@ function createTabPerHours(array) {
 		}
 	}
 	
-	console.log(tabHours);
+	return tabHours;
 }
