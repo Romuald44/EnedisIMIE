@@ -18,6 +18,10 @@
     <title>SUNSHARE</title>
 </head>
 <body>
+<% let soutirage = 0;
+let injection = 0;
+let autoconso = 0;
+let compteurJour = 0;%>
 <% include navbar %>
 <div class="container">
     <div class="row">
@@ -26,12 +30,19 @@
             <button type="button" class="btn btn-secondary">Heure</button>
             <button type="button" class="btn btn-secondary">Jour</button>
             <button type="button" class="btn btn-secondary">Semaine</button>
+            <button type="button" class="btn btn-secondary" disabled>Semaine</button>
         </div>
         </div>
     </div>
     <div class="row" id="graphes">
 
-        <%consommations.forEach(function (el,index) {%>
+        <% consommations.forEach(function (el,index) {
+        soutirage += consommations[index].soutirage
+        injection += consommations[index].injection
+        autoconso += consommations[index].autoconso
+        compteurJour += soutirage + autoconso
+        %>
+
         <div class="col-lg-1 col-md-2 col-sm-2" id="bandeauSmiley">
             <div id="smiley">
             <div class="heures">
@@ -91,8 +102,8 @@
     <div class="row">
             <div class="col-md-6 offset-md-3">
         <div class="progress">
-            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 35%">
-                35%<br> injectés<span class="sr-only">35% </span>
+            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width:<%= injection/(compteurJour/100)%>%">
+                <%= injection/(compteurJour/100)%>%<br> injectés
             </div>
             <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: 20%">
                 20%<br> autoconsommés<span class="sr-only">20% </span>
@@ -105,18 +116,15 @@
     </div>
     <div class="row">
         <div class="col-md-6 offset-md-3">
-    <iframe seamless width="888" height="336" frameborder="0" src="https://www.infoclimat.fr/public-api/mixed/iframeSLIDE?_ll=47.218371,-1.553621&_inc=WyJQYXJpcyIsIjQyIiwiMjk4ODUwNyIsIkZSIl0=&_auth=VU9WQVIsXH5VeAcwUCYKIwdvVGFZLwgvB3sKaQFkVSgBal8%2BB2dVM1M9B3oALwo8BCkGZVxnBTUKYQd%2FAHJfPlU%2FVjpSOVw7VToHYlB%2FCiEHKVQ1WXkILwdlCmUBaVUoAWNfPQdkVSlTOQdmAC4KPwQxBmZcfAUiCmgHZQBrXz5VMVY2UjVcPVU6B2FQfwohBzFUYFlkCDUHbQpoATpVNgFhXzgHZFU2UzQHYwAuCjwEMAZgXGcFPQpuB2cAb18jVSlWS1JCXCNVegcnUDUKeAcpVGFZOAhk&_c=b8c9cd50895a8acfd6e6b41aa324f2dc">
 
-    </iframe>
+    <!--<iframe seamless width="888" height="336" frameborder="0" src="https://www.infoclimat.fr/public-api/mixed/iframeSLIDE?_ll=47.218371,-1.553621&_inc=WyJQYXJpcyIsIjQyIiwiMjk4ODUwNyIsIkZSIl0=&_auth=VU9WQVIsXH5VeAcwUCYKIwdvVGFZLwgvB3sKaQFkVSgBal8%2BB2dVM1M9B3oALwo8BCkGZVxnBTUKYQd%2FAHJfPlU%2FVjpSOVw7VToHYlB%2FCiEHKVQ1WXkILwdlCmUBaVUoAWNfPQdkVSlTOQdmAC4KPwQxBmZcfAUiCmgHZQBrXz5VMVY2UjVcPVU6B2FQfwohBzFUYFlkCDUHbQpoATpVNgFhXzgHZFU2UzQHYwAuCjwEMAZgXGcFPQpuB2cAb18jVSlWS1JCXCNVegcnUDUKeAcpVGFZOAhk&_c=b8c9cd50895a8acfd6e6b41aa324f2dc">-->
+
+    <!--</iframe>-->
         </div>
     </div>
 
 </div>
 
 
-<!--<script src="https://www.amcharts.com/lib/4/core.js"></script>-->
-<!--<script src="https://www.amcharts.com/lib/4/charts.js"></script>-->
-<!--<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>-->
-<!--<script language="javascript" src="/js/graphesun.js" ></script>-->
 </body>
 </html>
