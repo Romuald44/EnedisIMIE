@@ -18,11 +18,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
-app.use('/js', express.static(__dirname + '/node_modules/echarts/dist'));
-app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect bootstrap CSS
+app.use('/js', express.static('/home/pi/interface/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
+app.use('/js', express.static('/home/pi/interface/node_modules/echarts/dist'));
+app.use('/css', express.static('/home/pi/interface/node_modules/bootstrap/dist/css')); // redirect bootstrap CSS
+app.use('/font', express.static('/home/pi/interface/node_modules/@fortawesome/fontawesome-free')); // fontawesome
 
-app.use('/conso', consoRouter);
+app.use('/', consoRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
