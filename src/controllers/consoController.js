@@ -2,13 +2,10 @@ const mongoose = require('mongoose');
 var consoModel = require('../models/consoModel.js');
 
 exports.index = function(req, res) {
-	//getConsoCumulToday().then(data => console.log(data));//res.render('conso', {conso: data})
-	
-	/*Promise.all([getConsoCumulToday(), getConsoPerHoursToday()]).then(function(data) {
-	  console.log(data)
-	});*/
-	
-	getConsoPerHoursToday();
+	Promise.all([getConsoCumulToday(), getConsoPerHoursToday(), getEvolution()]).then(function(data) {
+		console.log(data);
+		res.render('conso', {consoCumul: data[0], consoHours: data[1], consoEvol: data[2]});
+	});
 };
 
 function getConsoCumulToday() {
@@ -30,17 +27,88 @@ function getConsoCumulToday() {
 }
 
 function getConsoPerHoursToday() {
-	listConsoToday().then(data =>
-		console.log(data[0].timestamp)
-	);
+	var today = new Date().getTime().toString().substr(0, 5);
+	return new Promise(function(resolve, reject) {
+		listConsoToday(today).then(function(data) {
+			 resolve(createTabPerHours(data));
+		})
+	});
 }
 
-function listConsoToday() {
+function getEvolution() {
 	var today = new Date().getTime().toString().substr(0, 5);
 	
+	return new Promise(function(resolve, reject) {
+		listConsoToday(today).then(function(dataJ) {
+			 listConsoToday(today-1).then(function(dataJ1) {
+				 var tendance = [];
+				 for (var i = 0, len = dataJ.length; i < len; i++) {
+					 if(!dataJ[i].prod || !dataJ1[i].prod) {
+						 tendance[i] = {evol: 0}
+					 } else { 
+						 if(dataJ[i].prod > dataJ1[i].prod) {
+							 tendance[i] = {evol: 1}
+						 } else if(dataJ[i].prod < dataJ1[i].prod) {
+							 tendance[i] = {evol: -1}
+						 } else {
+							 tendance[i] = {evol: 0}
+						 }
+					 }
+				 }
+				 console.log(tendance);
+				 resolve(tendance);
+			 });
+		});
+	});
+}
+
+function listConsoToday(today) {
 	return new Promise((resolve, reject) => {
 		consoModel.find({ "tags.timestamp": new RegExp('^' + today) }, function(err, result) {
 			resolve(result);
 		});
 	})
+}
+
+function createTabPerHours(array) {
+	var hours = new Date(array[0].timestamp).getHours()
+	var tabHours = [];
+	var reccurent = 1;
+	
+	for (var i = 0, len = array.length; i < len; i++) {
+		var currHours = new Date(array[i].timestamp).getHours();
+		
+		if(currHours == hours) {
+			
+			if(reccurent > 1 ) {
+				tabHours[currHours] = {
+					inject: (tabHours[currHours].inject + array[i].fields.inject)/reccurent,
+					soutir: (tabHours[currHours].soutir + array[i].fields.soutir)/reccurent,
+					autoconso: (tabHours[currHours].autoconso + array[i].fields.autoconso)/reccurent,
+					prod: (tabHours[currHours].prod + array[i].fields.prod)/reccurent
+				}
+			} else {
+				tabHours[currHours] = {
+					inject: array[i].fields.inject,
+					soutir: array[i].fields.soutir,
+					autoconso: array[i].fields.autoconso,
+					prod: array[i].fields.prod
+				}
+			}
+		
+			reccurent++;
+		} else {
+			hours = currHours;
+			reccurent = 1;
+			
+			tabHours[currHours] = {
+				inject: array[i].fields.inject,
+				soutir: array[i].fields.soutir,
+				autoconso: array[i].fields.autoconso,
+				prod: array[i].fields.prod
+			}
+		}
+	}
+	
+	return tabHours;
 }
