@@ -5,27 +5,35 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Resources -->
+    <script language="javascript" src="/js/popper.min" ></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/dashboard.css"/>
 
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-	<script src="/js/bootstrap.min.js"></script>
-    
+
+
     <title>SUNSHARE</title>
 </head>
 <body>
 <% let soutirage = 0;
 let injection = 0;
-let autoconso = 0;
-let compteurJour = 0;%>
+let autoconso = 0
+let conso = 0;
+let compteurJour;
+let points = 0;
+let compteurPoints = 0;
+let infoPopup = "";%>
 <% include navbar %>
-<div class="container">
-    <div class="row">
+<div class="container-fluid">
+    <div class="row" id="btnDate">
         <div class="col-md-6 offset-md-3">
-        <div class="btn-group" style="width: 100%" id="dateSelect" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-secondary">Heure</button>
+        <div class="btn-group bg-info" style="width: 100%" id="dateSelect" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-info">Heure</button>
             <button type="button" class="btn btn-secondary">Jour</button>
             <button type="button" class="btn btn-secondary">Semaine</button>
-            <button type="button" class="btn btn-secondary" disabled>Semaine</button>
+
         </div>
+
         </div>
     </div>
     <div class="row" id="graphes">
@@ -34,92 +42,91 @@ let compteurJour = 0;%>
         soutirage += consommations[index].soutirage
         injection += consommations[index].injection
         autoconso += consommations[index].autoconso
-        compteurJour += soutirage + autoconso
+        conso     = soutirage + autoconso
+        infoPopup= "Consommation : "+conso+"\n Soutirage : "+soutirage+"\n Injection : "+injection+"\n Autoconsommation : "+autoconso
         %>
 
         <div class="col-lg-1 col-md-2 col-sm-2" id="bandeauSmiley">
             <div id="smiley">
-            <div class="heures">
-                <%= consommations[index].heure%>
+                <div class="heures bg-info">
+                    <%= consommations[index].heure%>
+                </div>
+
+                <% if (consommations[index].injection >0){%>
+
+                    <button type="button" class="btnSmiley" data-toggle="popover" title= "<%=infoPopup%>" data-content=""><img src="/images/smiley_green.png" class="smiley" ></button>
+
+
+                    <% points +=2 %>
+
+
+                <%} else{%>
+                    <% if ((consommations[index].injection +consommations[index].autoconso)> consommations[index].soutirage){ %>
+                    <button type="button" class="btnSmiley" data-toggle="popover" title= "<%=infoPopup%>" data-content=""><img src="/images/smiley_yellow.png" class="smiley" ></button>
+                            <!--<img src="/images/smiley_yellow.png" class="smiley">-->
+
+                    <%}else{%>
+                        <button type="button" class="btnSmiley" data-toggle="popover" title= "<%=infoPopup%>" data-content=""><img src="/images/smiley_red.png" class="smiley" ></button>
+                    <!--<img src="/images/smiley_red.png" class="smiley" >-->
+                            <% points -=2 %>
+
+                    <%}%>
+                <%}%>
+                    <%include tendance %>
+
             </div>
-                <!--</div>-->
-            <!--</div>-->
-                <%if (consommations[index].injection >0){%>
-
-                <img src="/images/smiley_green.png" >
-
-                <% if (lastconso[index].soutirage > consommations[index].soutirage){%>
-                    <img src="/images/fleche_rouge.png">
-                    <%}else if (lastconso[index].soutirage < consommations[index].soutirage){%>
-                        <img src="/images/fleche_vert.png">
-                    <%}else{%>
-                        <img src="/images/egal_classement.png">
-                    <%}%>
-            <%}else{%>
-                <img src="/images/smiley_red.png" >
-                    <% if (lastconso[index].soutirage > consommations[index].soutirage){%>
-                        <img src="/images/fleche_rouge.png">
-                    <%}else if (lastconso[index].soutirage < consommations[index].soutirage){%>
-                        <img src="/images/fleche_vert.png">
-                    <%}else{%>
-                        <img src="/images/egal_classement.png">
-                    <%}%>
-
-            <%}%>
-
-        </div>
         </div>
         <%})%>
-        <!--<div class="col-lg-2 col-md-3 col-sm-12 ">-->
+        <%compteurJour = soutirage + autoconso %>
+
+    </div>
+
+    <!--<div class="row">-->
+        <!--<div class="col-md-6 offset-md-3">-->
+
+        <!--<div class="progress" style="height: 50%">-->
+
+            <!--<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width:<%= injection/(compteurJour/100)%>%"><%= injection/1000%> Kw watt</div>-->
+        <!--</div>-->
 
         <!--</div>-->
-    </div>
     <!--</div>-->
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
 
-        <div class="progress" style="height: 50%">
+   <div class="row justify-content-around">
+       <div class="col-2 compteurs">
+            <span><%=compteurPoints%></span><p>Pts</p>
+           <!--<p>Pts</p>-->
+       </div>
+       <div class="col-6 ">
+           <div class="progress">
 
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%">75%</div>
-        </div>
+               <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: <%= autoconso/(compteurJour/100)%>%">
+                   <%=Math.round(autoconso/(compteurJour/100)*100)/100%>% (<%=autoconso/1000%> Kw)<br> autoconsommés
+               </div>
+               <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated " style="width: <%= soutirage/(compteurJour/100)%>%">
+                   <%=Math.round(soutirage/(compteurJour/100)*100)/100%>% (<%=soutirage/1000%> Kw)<br> soutirés
+               </div>
+           </div>
+       </div>
+       <div class="col-2 compteurs">
+           <p>Injection</p><span><%=injection/1000%><span></span> kwh</p>
 
-        </div>
-    </div>
-=======
-<% include ./navbar %>
-<div class="container-fluid">
->>>>>>> Stashed changes
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <div class="progress" style="height: 50%">
-                <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuenow="54" aria-valuemin="1673 kwh" aria-valuemax="0 Kwh" style="width: 54%">54%</div>
-            </div>
+       </div>
+   </div>
+    <!--<div class="row">-->
+            <!--<div class="col-md-6 offset-md-3">-->
+        <!--<div class="progress">-->
 
-        </div>
-    </div>
-    <div class="row">
-            <div class="col-md-6 offset-md-3">
-        <div class="progress">
-            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width:<%= injection/(compteurJour/100)%>%">
-                <%= injection/(compteurJour/100)%>%<br> injectés
-            </div>
-            <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: 20%">
-                20%<br> autoconsommés<span class="sr-only">20% </span>
-            </div>
-            <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated " style="width: 10%">
-                10%<br> soutirés<span class="sr-only">10% </span>
-            </div>
-        </div>
-            </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
+            <!--<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: <%= autoconso/(compteurJour/100)%>%">-->
+                <!--<%=Math.round(autoconso/(compteurJour/100)*100)/100%>% (<%=autoconso/1000%> Kw)<br> autoconsommés-->
+            <!--</div>-->
+            <!--<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated " style="width: <%= soutirage/(compteurJour/100)%>%">-->
+                <!--<%=Math.round(soutirage/(compteurJour/100)*100)/100%>% (<%=soutirage/1000%> Kw)<br> soutirés-->
+            <!--</div>-->
+        <!--</div>-->
+            <!--</div>-->
+    <!--</div>-->
 
-    <!--<iframe seamless width="888" height="336" frameborder="0" src="https://www.infoclimat.fr/public-api/mixed/iframeSLIDE?_ll=47.218371,-1.553621&_inc=WyJQYXJpcyIsIjQyIiwiMjk4ODUwNyIsIkZSIl0=&_auth=VU9WQVIsXH5VeAcwUCYKIwdvVGFZLwgvB3sKaQFkVSgBal8%2BB2dVM1M9B3oALwo8BCkGZVxnBTUKYQd%2FAHJfPlU%2FVjpSOVw7VToHYlB%2FCiEHKVQ1WXkILwdlCmUBaVUoAWNfPQdkVSlTOQdmAC4KPwQxBmZcfAUiCmgHZQBrXz5VMVY2UjVcPVU6B2FQfwohBzFUYFlkCDUHbQpoATpVNgFhXzgHZFU2UzQHYwAuCjwEMAZgXGcFPQpuB2cAb18jVSlWS1JCXCNVegcnUDUKeAcpVGFZOAhk&_c=b8c9cd50895a8acfd6e6b41aa324f2dc">-->
-
-    <!--</iframe>-->
-        </div>
-    </div>
 
 </div>
 
