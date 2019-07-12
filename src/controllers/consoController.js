@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
 var consoModel = require('../models/consoModel.js');
+var teamModel = require('../models/teamModel.js');
 
 exports.index = function(req, res) {
 	Promise.all([getConsoCumulToday(), getConsoPerHoursToday(), getEvolution()]).then(function(data) {
 		console.log(data);
-		res.render('conso', {consoCumul: data[0], consoHours: data[1], consoEvol: data[2]});
+		//res.render('dashboard', {consoCumul: data[0], consoHours: data[1], consoEvol: data[2]});
+	});
+};
+
+exports.teams = function(req, res) {
+	getAllTeams().then(function(teams) {
+		console.log(teams);
+		res.render('team', {teams: teams});
 	});
 };
 
@@ -43,12 +51,12 @@ function getEvolution() {
 			 listConsoToday(today-1).then(function(dataJ1) {
 				 var tendance = [];
 				 for (var i = 0, len = dataJ.length; i < len; i++) {
-					 if(!dataJ[i].prod || !dataJ1[i].prod) {
+					 if(!dataJ[i].fields.prod || !dataJ1[i].fields.prod) {
 						 tendance[i] = {evol: 0}
 					 } else { 
-						 if(dataJ[i].prod > dataJ1[i].prod) {
+						 if(dataJ[i].fields.prod > dataJ1[i].fields.prod) {
 							 tendance[i] = {evol: 1}
-						 } else if(dataJ[i].prod < dataJ1[i].prod) {
+						 } else if(dataJ[i].fields.prod < dataJ1[i].fields.prod) {
 							 tendance[i] = {evol: -1}
 						 } else {
 							 tendance[i] = {evol: 0}
@@ -111,4 +119,12 @@ function createTabPerHours(array) {
 	}
 	
 	return tabHours;
+}
+
+function getAllTeams() {
+	return new Promise(function(resolve, reject) {
+		teamModel.find({}, function(err, result) {
+			resolve(result);
+		});
+	});
 }

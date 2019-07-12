@@ -1,5 +1,4 @@
 <!-- Chart code -->
-
 am4core.ready(function() {
 
 // Themes begin
@@ -7,12 +6,12 @@ am4core.ready(function() {
 // Themes end
 
 // Create chart instance
-    var chart = am4core.create("chartdiv", am4charts.RadarChart);
+    let chart = am4core.create("chartdiv", am4charts.RadarChart);
     chart.scrollbarX = new am4core.Scrollbar();
 
-    var data = [];
+    let data = [];
 
-    for(var i = 0; i < 25; i++){
+    for(let i = 0; i < 25; i+=2){
         data.push({category: i, value:i});
        // data.push({category: i, value:Math.round(Math.random() * 100)});
     }
@@ -22,7 +21,7 @@ am4core.ready(function() {
     chart.innerRadius = am4core.percent(50);
 
 // Create axes
-    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = "category";
     categoryAxis.renderer.grid.template.location = 0;
     categoryAxis.renderer.minGridDistance = 30;
@@ -35,13 +34,13 @@ am4core.ready(function() {
     labelTemplate.location = 0.5;
     labelTemplate.relativeRotation = 90;
 
-    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.renderer.grid.template.disabled = true;
     valueAxis.renderer.labels.template.disabled = true;
     valueAxis.tooltip.disabled = true;
 
 // Create series
-    var series = chart.series.push(new am4charts.RadarColumnSeries());
+    let series = chart.series.push(new am4charts.RadarColumnSeries());
     series.sequencedInterpolation = true;
     series.dataFields.valueY = "value";
     series.dataFields.categoryX = "category";
@@ -69,5 +68,4 @@ am4core.ready(function() {
 
 }); // end
 
-
-am4core.ready();
+//am4core.ready();
