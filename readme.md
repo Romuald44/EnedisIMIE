@@ -3,9 +3,17 @@ Installation de la base de données mongodb
 ```
 npm install mongodb
 ```
+Lancer mongodb
+```
+mongod --dbpath /path
+```
 
 ## Lancer le projet
-Exécuter la commande suivante :
+Récupérer les dépendances
+```
+npm install
+```
+Démarrer le projet
 ```
 npm start
 ```
