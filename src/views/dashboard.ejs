@@ -21,20 +21,35 @@ let autoconso = 0
 let conso = 0;
 let compteurJour;
 let points = 0;
+let prod = 0;
 let compteurPoints = 0;
 let infoPopup = "";%>
 <% include navbar %>
 <div class="container-fluid">
-    <div class="row" id="btnDate">
-        <div class="col-md-6 offset-md-3">
-        <div class="btn-group bg-info" style="width: 100%" id="dateSelect" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-info">Heure</button>
-            <button type="button" class="btn btn-secondary">Jour</button>
-            <button type="button" class="btn btn-secondary">Semaine</button>
+    <!--<div class="row justify-content-end">-->
+        <!--<div class="col-4">-->
+            <!--One of two columns-->
+        <!--</div>-->
+        <!--<div class="col-4">-->
+            <!--One of two columns-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="row justify-content-end" id="btnDate">
+        <div class="col-lg-6">
+        <!--<div class="col-md-6 offset-md-3">-->
+            <div class="btn-group bg-info" style="width: 100%" id="dateSelect" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-info">Heure</button>
+                <button type="button" class="btn btn-secondary">Jour</button>
+                <button type="button" class="btn btn-secondary">Semaine</button>
 
+            </div>
+        </div>
+        <div class="col-lg-3 " id="index">
+            Index   <span> 8673 Kwh</span>
         </div>
 
-        </div>
+    </div>
+
     </div>
     <div class="row" id="graphes">
 
@@ -43,6 +58,7 @@ let infoPopup = "";%>
         injection += consommations[index].injection
         autoconso += consommations[index].autoconso
         conso     = soutirage + autoconso
+
         infoPopup= "Consommation : "+conso+"\n Soutirage : "+soutirage+"\n Injection : "+injection+"\n Autoconsommation : "+autoconso
         %>
 
@@ -56,12 +72,11 @@ let infoPopup = "";%>
 
                     <button type="button" class="btnSmiley" data-toggle="popover" title= "<%=infoPopup%>" data-content=""><img src="/images/smiley_green.png" class="smiley" ></button>
 
-
                     <% points +=2 %>
 
+                <%} else if (consommations[index].injection ==0){%>
 
-                <%} else{%>
-                    <% if ((consommations[index].injection +consommations[index].autoconso)> consommations[index].soutirage){ %>
+                        <% if (consommations[index].heure == "00:00" || consommations[index].heure == "02:00" || consommations[index].heure == "04:00" || consommations[index].heure == "06:00" || consommations[index].heure == "22:00"){ %>
                     <button type="button" class="btnSmiley" data-toggle="popover" title= "<%=infoPopup%>" data-content=""><img src="/images/smiley_yellow.png" class="smiley" ></button>
                             <!--<img src="/images/smiley_yellow.png" class="smiley">-->
 
@@ -81,17 +96,6 @@ let infoPopup = "";%>
 
     </div>
 
-    <!--<div class="row">-->
-        <!--<div class="col-md-6 offset-md-3">-->
-
-        <!--<div class="progress" style="height: 50%">-->
-
-            <!--<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width:<%= injection/(compteurJour/100)%>%"><%= injection/1000%> Kw watt</div>-->
-        <!--</div>-->
-
-        <!--</div>-->
-    <!--</div>-->
-
    <div class="row justify-content-around">
        <div class="col-2 compteurs">
             <span><%=compteurPoints%></span><p>Pts</p>
@@ -100,32 +104,20 @@ let infoPopup = "";%>
        <div class="col-6 ">
            <div class="progress">
 
-               <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: <%= autoconso/(compteurJour/100)%>%">
+               <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated textProgress" style="width: <%= autoconso/(compteurJour/100)%>%">
                    <%=Math.round(autoconso/(compteurJour/100)*100)/100%>% (<%=autoconso/1000%> Kw)<br> autoconsommés
                </div>
-               <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated " style="width: <%= soutirage/(compteurJour/100)%>%">
+               <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated textProgress " style="width: <%= soutirage/(compteurJour/100)%>%">
                    <%=Math.round(soutirage/(compteurJour/100)*100)/100%>% (<%=soutirage/1000%> Kw)<br> soutirés
                </div>
            </div>
        </div>
        <div class="col-2 compteurs">
-           <p>Injection</p><span><%=injection/1000%><span></span> kwh</p>
+           <p>Injection</p><span><%=injection/1000%></span> kwh</p>
 
        </div>
    </div>
-    <!--<div class="row">-->
-            <!--<div class="col-md-6 offset-md-3">-->
-        <!--<div class="progress">-->
 
-            <!--<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: <%= autoconso/(compteurJour/100)%>%">-->
-                <!--<%=Math.round(autoconso/(compteurJour/100)*100)/100%>% (<%=autoconso/1000%> Kw)<br> autoconsommés-->
-            <!--</div>-->
-            <!--<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated " style="width: <%= soutirage/(compteurJour/100)%>%">-->
-                <!--<%=Math.round(soutirage/(compteurJour/100)*100)/100%>% (<%=soutirage/1000%> Kw)<br> soutirés-->
-            <!--</div>-->
-        <!--</div>-->
-            <!--</div>-->
-    <!--</div>-->
 
 
 </div>
